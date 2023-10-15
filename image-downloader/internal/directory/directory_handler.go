@@ -1,13 +1,10 @@
-package downloader_concurrency
+package directory
 
 import (
 	"os"
 )
 
-const URL = "https://picsum.photos/200/300"
-const ImageDirectory = "./images"
-
-func createDirectory(directory string) error {
+func CreateDirectory(directory string) error {
 	if _, err := os.Stat(directory); os.IsNotExist(err) {
 		err := os.Mkdir(directory, os.ModePerm)
 

@@ -1,4 +1,4 @@
-package downloader_concurrency
+package downloader
 
 import (
 	"errors"
@@ -21,20 +21,14 @@ func ExecuteDownload(qty int, baseURL, baseFileName string) error {
 		return fmt.Errorf("error creating directory: %v", err.Error())
 	}
 
-	pool := NewWorkerPool(10) // Set the number of workers as needed
-	pool.StartWorkers()
-
 	for i := 1; i <= qty; i++ {
 		index := i
-		pool.Submit(func() {
-			err := downloadFile(URL, fmt.Sprintf("%s %v.png", baseFileName, index))
-			if err != nil {
-				log.Printf("Error downloading from %s: %v", URL, err)
-			}
-		})
+		err := downloadFile(URL, fmt.Sprintf("%s %v.png", baseFileName, index))
+		if err != nil {
+			log.Printf("Error downloading from %s: %v", URL, err)
+		}
 	}
 
-	pool.Wait()
 	return nil
 }
 
