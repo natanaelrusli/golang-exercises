@@ -1,4 +1,4 @@
-package main
+package downloader_concurrency
 
 import (
 	"errors"
@@ -9,18 +9,6 @@ import (
 	"os"
 )
 
-const URL = "https://picsum.photos/200/300"
-const ImageDirectory = "./images"
-
-func main() {
-	fileName := "sample"
-	err := ExecuteDownload(5, URL, fileName)
-
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-}
-
 func ExecuteDownload(qty int, baseURL, baseFileName string) error {
 	err := createDirectory(ImageDirectory)
 
@@ -28,14 +16,20 @@ func ExecuteDownload(qty int, baseURL, baseFileName string) error {
 		return fmt.Errorf("error creating directory: %v", err.Error())
 	}
 
-	for i := 1; i <= qty; i++ {
-		err := downloadFile(URL, fmt.Sprintf("%s %v.png", baseFileName, i))
+	pool := NewWorkerPool(10) // Set the number of workers as needed
+	pool.StartWorkers()
 
-		if err != nil {
-			return fmt.Errorf("error downloading from: %s", URL)
-		}
+	for i := 1; i <= qty; i++ {
+		index := i
+		pool.Submit(func() {
+			err := downloadFile(URL, fmt.Sprintf("%s %v.png", baseFileName, index))
+			if err != nil {
+				log.Printf("Error downloading from %s: %v", URL, err)
+			}
+		})
 	}
 
+	pool.Wait()
 	return nil
 }
 
@@ -68,19 +62,7 @@ func downloadFile(URL, fileName string) error {
 		return err
 	}
 
-	fmt.Printf("File %s downloaded in ./images direcrory\n", fileName)
-
-	return nil
-}
-
-func createDirectory(directory string) error {
-	if _, err := os.Stat(directory); os.IsNotExist(err) {
-		err := os.Mkdir(directory, os.ModePerm)
-
-		if err != nil {
-			return err
-		}
-	}
+	fmt.Printf("File %s downloaded in ./images directory\n", fileName)
 
 	return nil
 }
