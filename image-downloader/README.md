@@ -55,3 +55,28 @@ Downloaded image 18 successfully
 Downloaded image 19 successfully
 Downloaded image 20 successfully
 ```
+
+### Is more worker good?
+
+The optimal number of workers depends on various factors, including the nature of the tasks, the characteristics of the system, and the available resources. Having more workers can potentially increase parallelism and speed up the overall execution of tasks, but it's not always the case.
+
+Here are some considerations:
+
+- #### Task Nature:
+
+  If tasks are CPU-bound, having more workers than the number of available CPU cores might not lead to better performance. On the other hand, for I/O-bound tasks (like downloading files), having more workers can be beneficial as they can overlap I/O operations.
+
+- #### System Characteristics:
+
+  The number of workers should be adjusted based on the system's capacity. If you have a system with a limited number of cores, having too many workers might lead to contention and degrade performance.
+
+- #### Resource Constraints:
+
+  Each worker consumes system resources, so there's a trade-off. Too many workers can lead to increased memory consumption and contention for resources.
+
+- #### Network and Disk Speed:
+  If the tasks involve network or disk operations, having more workers can help overlap latency, but there's a limit to the improvement.
+
+It's often a good idea to experiment with different numbers of workers to find the optimal balance for your specific scenario. Consider monitoring system resources (CPU, memory, etc.) during execution to ensure that your application is not becoming resource-bound.
+
+In the provided example, you can adjust the maxWorker value in the NewWorkerPool function to experiment with different numbers of workers. Keep in mind that setting the number of workers significantly higher than the number of available CPU cores might not always lead to better performance, especially for CPU-bound tasks.
